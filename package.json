@@ -1,6 +1,6 @@
 {
   "name": "react-native-chart-kit-zolt",
-  "version": "6.11.0",
+  "version": "6.11.1",
   "devDependencies": {
     "@types/react-native": "^0.70.0",
     "babel-eslint": "10.x",
