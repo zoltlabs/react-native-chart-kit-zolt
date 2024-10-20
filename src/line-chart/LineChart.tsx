@@ -279,61 +279,66 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       }
     } = this.props;
     const xMax = this.getXMaxValues(data);
-    data.forEach(dataset => {
-      if (dataset.withDots == false) return;
 
-      dataset.data.forEach((x, i) => {
-        if (hidePointsAtIndex.includes(i)) {
-          return;
-        }
+    if (data != null) {
+      data.forEach(dataset => {
+        if (dataset.withDots == false) return;
 
-        const cx = paddingRight + (i * (width - paddingRight)) / xMax;
-
-        const cy =
-          ((baseHeight - this.calcHeight(x, datas, height)) / 4) * 3 +
-          paddingTop;
-
-        const onPress = () => {
-          if (!onDataPointClick || hidePointsAtIndex.includes(i)) {
-            return;
-          }
-
-          onDataPointClick({
-            index: i,
-            value: x,
-            dataset,
-            x: cx,
-            y: cy,
-            getColor: opacity => this.getColor(dataset, opacity)
-          });
-        };
-
-        output.push(
-          <Circle
-            key={Math.random()}
-            cx={cx}
-            cy={cy}
-            fill={
-              typeof getDotColor === "function"
-                ? getDotColor(x, i)
-                : this.getColor(dataset, 0.9)
+        if (dataset.data != null) {
+          dataset.data.forEach((x, i) => {
+            if (hidePointsAtIndex.includes(i)) {
+              return;
             }
-            onPress={onPress}
-            {...this.getPropsForDots(x, i)}
-          />,
-          <Circle
-            key={Math.random()}
-            cx={cx}
-            cy={cy}
-            r="14"
-            fill="#fff"
-            fillOpacity={0}
-            onPress={onPress}
-          />,
-          renderDotContent({ x: cx, y: cy, index: i, indexData: x })
-        );
+
+            const cx = paddingRight + (i * (width - paddingRight)) / xMax;
+
+            const cy =
+              ((baseHeight - this.calcHeight(x, datas, height)) / 4) * 3 +
+              paddingTop;
+
+            const onPress = () => {
+              if (!onDataPointClick || hidePointsAtIndex.includes(i)) {
+                return;
+              }
+
+              onDataPointClick({
+                index: i,
+                value: x,
+                dataset,
+                x: cx,
+                y: cy,
+                getColor: opacity => this.getColor(dataset, opacity)
+              });
+            };
+
+            output.push(
+              <Circle
+                key={Math.random()}
+                cx={cx}
+                cy={cy}
+                fill={
+                  typeof getDotColor === "function"
+                    ? getDotColor(x, i)
+                    : this.getColor(dataset, 0.9)
+                }
+                onPress={onPress}
+                {...this.getPropsForDots(x, i)}
+              />,
+              <Circle
+                key={Math.random()}
+                cx={cx}
+                cy={cy}
+                r="14"
+                fill="#fff"
+                fillOpacity={0}
+                onPress={onPress}
+              />,
+              renderDotContent({ x: cx, y: cy, index: i, indexData: x })
+            );
+          });
+        }
       });
-    });
+    }
 
     return output;
   };
@@ -452,13 +457,13 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
               height
             )) /
             4) *
-            3 +
+          3 +
           paddingTop;
         yValues.push(yval);
         const xval =
           paddingRight +
           ((dataset.data.length - index - 1) * (width - paddingRight)) /
-            dataset.data.length;
+          dataset.data.length;
         xValues.push(xval);
 
         yValuesLabel.push(
@@ -579,13 +584,12 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
               })
               .join(" ") +
             ` ${paddingRight +
-              ((width - paddingRight) / dataset.data.length) *
-                (dataset.data.length - 1)},${(height / 4) * 3 +
-              paddingTop} ${paddingRight},${(height / 4) * 3 + paddingTop}`
+            ((width - paddingRight) / dataset.data.length) *
+            (dataset.data.length - 1)},${(height / 4) * 3 +
+            paddingTop} ${paddingRight},${(height / 4) * 3 + paddingTop}`
           }
-          fill={`url(#fillShadowGradientFrom${
-            useColorFromDataset ? `_${index}` : ""
-          })`}
+          fill={`url(#fillShadowGradientFrom${useColorFromDataset ? `_${index}` : ""
+            })`}
           strokeWidth={0}
         />
       );
@@ -650,7 +654,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
 
   getXMaxValues = (data: Dataset[]) => {
     return data.reduce((acc, cur) => {
-      return cur.data.length > acc ? cur.data.length : acc;
+      return cur.data == null ? acc : cur.data.length > acc ? cur.data.length : acc;
     }, 0);
   };
 
@@ -667,7 +671,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
       "width" | "height" | "paddingRight" | "paddingTop" | "data"
     >
   ) => {
-    if (dataset.data.length === 0) {
+    if (dataset.data == null || dataset.data.length === 0) {
       return "M0,0";
     }
 
@@ -711,7 +715,7 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
     AbstractChartConfig,
     "data" | "width" | "height" | "paddingRight" | "paddingTop"
   >) => {
-    return data.map((dataset, index) => {
+    return data == null ? 0 : data.map((dataset, index) => {
       const result = this.getBezierLinePoints(dataset, {
         width,
         height,
@@ -758,17 +762,16 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
           data
         }) +
         ` L${paddingRight +
-          ((width - paddingRight) / xMax) *
-            (dataset.data.length - 1)},${(height / 4) * 3 +
-          paddingTop} L${paddingRight},${(height / 4) * 3 + paddingTop} Z`;
+        ((width - paddingRight) / xMax) *
+        (dataset.data == null ? 0 : dataset.data.length - 1)},${(height / 4) * 3 +
+        paddingTop} L${paddingRight},${(height / 4) * 3 + paddingTop} Z`;
 
       return (
         <Path
           key={index}
           d={d}
-          fill={`url(#fillShadowGradientFrom${
-            useColorFromDataset ? `_${index}` : ""
-          })`}
+          fill={`url(#fillShadowGradientFrom${useColorFromDataset ? `_${index}` : ""
+            })`}
           strokeWidth={0}
         />
       );
@@ -871,18 +874,18 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
               {withHorizontalLines &&
                 (withInnerLines
                   ? this.renderHorizontalLines({
-                      ...config,
-                      count: count,
-                      paddingTop,
-                      paddingRight
-                    })
+                    ...config,
+                    count: count,
+                    paddingTop,
+                    paddingRight
+                  })
                   : withOuterLines
-                  ? this.renderHorizontalLine({
+                    ? this.renderHorizontalLine({
                       ...config,
                       paddingTop,
                       paddingRight
                     })
-                  : null)}
+                    : null)}
             </G>
             <G>
               {withHorizontalLabels &&
@@ -900,18 +903,18 @@ class LineChart extends AbstractChart<LineChartProps, LineChartState> {
               {withVerticalLines &&
                 (withInnerLines
                   ? this.renderVerticalLines({
-                      ...config,
-                      data: data.datasets[0].data,
-                      paddingTop: paddingTop as number,
-                      paddingRight: paddingRight as number
-                    })
+                    ...config,
+                    data: data.datasets[0].data,
+                    paddingTop: paddingTop as number,
+                    paddingRight: paddingRight as number
+                  })
                   : withOuterLines
-                  ? this.renderVerticalLine({
+                    ? this.renderVerticalLine({
                       ...config,
                       paddingTop: paddingTop as number,
                       paddingRight: paddingRight as number
                     })
-                  : null)}
+                    : null)}
             </G>
             <G>
               {withVerticalLabels &&

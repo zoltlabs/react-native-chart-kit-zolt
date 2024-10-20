@@ -50,7 +50,7 @@ class AbstractChart<
     } else if (this.props.fromNumber) {
       return (
         Math.max(...data, this.props.fromNumber) -
-          Math.min(...data, this.props.fromNumber) || 1
+        Math.min(...data, this.props.fromNumber) || 1
       );
     } else {
       return Math.max(...data) - Math.min(...data) || 1;
@@ -180,7 +180,7 @@ class AbstractChart<
   };
 
   renderHorizontalLabels = (
-    config: Omit<AbstractChartConfig, "data"> & { data: number[] }
+    config: Omit<AbstractChartConfig, "data"> & { data: number[]; }
   ) => {
     const {
       count,
@@ -221,8 +221,8 @@ class AbstractChart<
         count === 1 && this.props.fromZero
           ? paddingTop + 4
           : height * verticalLabelsHeightPercentage -
-            (basePosition / count) * i +
-            paddingTop;
+          (basePosition / count) * i +
+          paddingTop;
       return (
         <Text
           rotation={horizontalLabelRotation}
@@ -329,7 +329,7 @@ class AbstractChart<
       | "verticalLabelsHeightPercentage"
     >,
     "data"
-  > & { data: number[] }) => {
+  > & { data: number[]; }) => {
     const { yAxisInterval = 1 } = this.props;
 
     return [...new Array(Math.ceil(data.length / yAxisInterval))].map(
@@ -339,12 +339,12 @@ class AbstractChart<
             key={Math.random()}
             x1={Math.floor(
               ((width - paddingRight) / (data.length / yAxisInterval)) * i +
-                paddingRight
+              paddingRight
             )}
             y1={0}
             x2={Math.floor(
               ((width - paddingRight) / (data.length / yAxisInterval)) * i +
-                paddingRight
+              paddingRight
             )}
             y2={height * verticalLabelsHeightPercentage + paddingTop}
             {...this.getPropsForBackgroundLines()}
@@ -471,8 +471,8 @@ class AbstractChart<
         <LinearGradient
           id="backgroundGradient"
           x1={0}
-          y1={height}
-          x2={width}
+          y1={height == null ? 0 : height}
+          x2={width == null ? 0 : width}
           y2={0}
           gradientUnits="userSpaceOnUse"
         >
